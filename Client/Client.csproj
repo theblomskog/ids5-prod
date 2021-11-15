@@ -7,6 +7,7 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<Nullable>enable</Nullable>
+		<UserSecretsId>9ea3c4af-55df-4846-b5ad-0894961e71cb</UserSecretsId>
 	</PropertyGroup>
 
 </Project>
