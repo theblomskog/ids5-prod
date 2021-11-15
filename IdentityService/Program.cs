@@ -21,6 +21,7 @@ namespace IdentityService
         public static void Main(string[] args)
         {
             Settings.StartupTime = DateTime.Now;
+            Console.Title = _applicationName;
 
             CreateHostBuilder(args).Build().Run();
         }
