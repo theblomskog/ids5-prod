@@ -46,6 +46,7 @@ namespace Client
             else
             {
                 app.UseHsts();
+                app.UseExceptionHandler("/Home/Error");
             }
 
             app.UseSerilogRequestLogging();

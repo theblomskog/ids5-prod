@@ -18,6 +18,10 @@
 	  </None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Quickstart\TestError\" />
+	</ItemGroup>
+
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>9ea3c4af-55df-4846-b5ad-0894961e71cb</UserSecretsId>
