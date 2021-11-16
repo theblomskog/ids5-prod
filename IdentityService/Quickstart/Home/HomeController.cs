@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Duende.IdentityServer.Services;
+using Microsoft.Extensions.Configuration;
+using Infrastructure;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -19,12 +21,19 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
 
-        public HomeController(IIdentityServerInteractionService interaction, IWebHostEnvironment environment, ILogger<HomeController> logger)
+        public HomeController(
+            IIdentityServerInteractionService interaction, 
+            IWebHostEnvironment environment, 
+            ILogger<HomeController> logger,
+            IConfiguration configuration
+            )
         {
             _interaction = interaction;
             _environment = environment;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
@@ -34,9 +43,29 @@ namespace IdentityServerHost.Quickstart.UI
                 // only show in development
                 return View();
             }
+            else
+            {
+                // Show some minimal details in production
+                _logger.LogInformation("Homepage is disabled in production. Returning 404.");
 
-            _logger.LogInformation("Homepage is disabled in production. Returning 404.");
-            return NotFound();
+                string build = "Debug build";
+                if (Settings.IsReleaseBuild)
+                {
+                    build = "Release build";
+                }
+
+                //Print out the first 8 characters of the GitHub SHA when deploying to production
+                //Should of course be a bit more hidden in real life, perhaps as a HTML comment?
+                var gitHubSha = _configuration["GITHUB:SHA"] ?? "";
+                if (gitHubSha.Length > 8)
+                {
+                    gitHubSha = " " + gitHubSha.Substring(0, 8);
+                }
+
+                string msg = $"Service started: {Settings.StartupTime} ({_environment.EnvironmentName}, {build}{gitHubSha})";
+
+                return Ok(msg);
+            }
         }
 
         /// <summary>
