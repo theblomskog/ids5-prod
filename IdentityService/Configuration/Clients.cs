@@ -6,16 +6,14 @@ namespace IdentityService.Configuration
 {
     public class Clients
     {
-        public static IEnumerable<Client> GetClients()
+        private static Client clientDev = new Client
         {
-            var client1 = new Client
-            {
-                ClientId = "authcodeflowclient",        //Unique ID of the client
-                ClientName = "My Client application",   //Client display name (used for logging and consent screen)
-                ClientUri = "https://www.tn-data.se",   //URI to further information about client (used on consent screen)
-                RequirePkce = true,
+            ClientId = "authcodeflowclient_dev",        //Unique ID of the client
+            ClientName = "My Client application",   //Client display name (used for logging and consent screen)
+            ClientUri = "https://www.tn-data.se",   //URI to further information about client (used on consent screen)
+            RequirePkce = true,
 
-                ClientSecrets = new List<Secret>
+            ClientSecrets = new List<Secret>
                 {
                     new Secret
                     {
@@ -23,35 +21,35 @@ namespace IdentityService.Configuration
                     }
                 },
 
-				AllowOfflineAccess = true,
-		 
-                AllowedGrantTypes = GrantTypes.Code,
+            AllowOfflineAccess = true,
 
-                // When requesting both an id token and access token, should the user claims always
-                // be added to the id token instead of requiring the client to use the UserInfo endpoint.
-                // Defaults to false.
-                AlwaysIncludeUserClaimsInIdToken = false,
+            AllowedGrantTypes = GrantTypes.Code,
 
-                //Specifies whether this client is allowed to receive access tokens via the browser. 
-                //This is useful to harden flows that allow multiple response types 
-                //(e.g. by disallowing a hybrid flow client that is supposed to  use code id_token to add the token response type and thus leaking the token to the browser.
-                AllowAccessTokensViaBrowser = false,
+            // When requesting both an id token and access token, should the user claims always
+            // be added to the id token instead of requiring the client to use the UserInfo endpoint.
+            // Defaults to false.
+            AlwaysIncludeUserClaimsInIdToken = false,
 
-                RedirectUris =
+            //Specifies whether this client is allowed to receive access tokens via the browser. 
+            //This is useful to harden flows that allow multiple response types 
+            //(e.g. by disallowing a hybrid flow client that is supposed to  use code id_token to add the token response type and thus leaking the token to the browser.
+            AllowAccessTokensViaBrowser = false,
+
+            RedirectUris =
                 {
                     "https://localhost:5001/signin-oidc"
                 },
 
-                PostLogoutRedirectUris =
+            PostLogoutRedirectUris =
                 {
                     "https://localhost:5001/signout-callback-oidc"
                 },
-                FrontChannelLogoutUri = "https://localhost:5001/signout-oidc",
+            FrontChannelLogoutUri = "https://localhost:5001/signout-oidc",
 
-                // By default a client has no access to any resources
-                // specify the allowed resources by adding the corresponding scopes names.
-                // If empty, the client can't access any scope
-                AllowedScopes =
+            // By default a client has no access to any resources
+            // specify the allowed resources by adding the corresponding scopes names.
+            // If empty, the client can't access any scope
+            AllowedScopes =
                 {
                     //Standard scopes
                     IdentityServerConstants.StandardScopes.OpenId,
@@ -60,16 +58,76 @@ namespace IdentityService.Configuration
                     IdentityServerConstants.StandardScopes.Phone,
                 },
 
-                AllowedCorsOrigins =
+            AllowedCorsOrigins =
                 {
                     "https://localhost:5001"
                 }
-            };
+        };
 
+        private static Client clientProd = new Client
+        {
+            ClientId = "authcodeflowclient_prod",        //Unique ID of the client
+            ClientName = "My Client application",   //Client display name (used for logging and consent screen)
+            ClientUri = "https://www.tn-data.se",   //URI to further information about client (used on consent screen)
+            RequirePkce = true,
 
+            ClientSecrets = new List<Secret>
+                {
+                    new Secret
+                    {
+                        Value = "mysecret".Sha512()
+                    }
+                },
+
+            AllowOfflineAccess = true,
+
+            AllowedGrantTypes = GrantTypes.Code,
+
+            // When requesting both an id token and access token, should the user claims always
+            // be added to the id token instead of requiring the client to use the UserInfo endpoint.
+            // Defaults to false.
+            AlwaysIncludeUserClaimsInIdToken = false,
+
+            //Specifies whether this client is allowed to receive access tokens via the browser. 
+            //This is useful to harden flows that allow multiple response types 
+            //(e.g. by disallowing a hybrid flow client that is supposed to  use code id_token to add the token response type and thus leaking the token to the browser.
+            AllowAccessTokensViaBrowser = false,
+
+            RedirectUris =
+                {
+                    "https://student2-client.secure.nu/signin-oidc"
+                },
+
+            PostLogoutRedirectUris =
+                {
+                    "https://student2-client.secure.nu/signout-callback-oidc"
+                },
+            FrontChannelLogoutUri = "https://student2-client.secure.nu/signout-oidc",
+
+            // By default a client has no access to any resources
+            // specify the allowed resources by adding the corresponding scopes names.
+            // If empty, the client can't access any scope
+            AllowedScopes =
+                {
+                    //Standard scopes
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.Phone,
+                },
+
+            AllowedCorsOrigins =
+                {
+                    "https://student2-client.secure.nu"
+                }
+        };
+
+        public static IEnumerable<Client> GetClients()
+        {
             return new List<Client>()
             {
-                client1
+                clientDev,
+                clientProd
             };
         }
     }
