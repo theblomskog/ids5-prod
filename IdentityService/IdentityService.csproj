@@ -7,6 +7,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\IdentityService.Configuration\IdentityService.Configuration.csproj" />
+		<ProjectReference Include="..\IdentityService.EntityFramework\IdentityService.EntityFramework.csproj" />
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 

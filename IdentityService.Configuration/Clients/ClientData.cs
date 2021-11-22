@@ -1,10 +1,10 @@
-﻿using Duende.IdentityServer;
+﻿using System.Collections.Generic;
+using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
-using System.Collections.Generic;
 
-namespace IdentityService.Configuration
+namespace IdentityService.Configuration.Clients
 {
-    public class Clients
+    public class ClientData
     {
         private static Client clientDev = new Client
         {
@@ -57,6 +57,7 @@ namespace IdentityService.Configuration
                     IdentityServerConstants.StandardScopes.Email,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.Phone,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
                 },
 
             AllowedCorsOrigins =
@@ -115,6 +116,7 @@ namespace IdentityService.Configuration
                     IdentityServerConstants.StandardScopes.Email,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.Phone,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
                 },
 
             AllowedCorsOrigins =
@@ -131,5 +133,6 @@ namespace IdentityService.Configuration
                 clientProd
             };
         }
+
     }
 }

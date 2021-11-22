@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using IdentityServerHost.Quickstart.UI;
 using IdentityServerInMem;
 using IdentityService.Configuration;
+using IdentityService.Configuration.Clients;
 using Infrastructure;
 using Infrastructure.DataProtection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -47,7 +49,14 @@ namespace IdentityService
             .AddTestUsers(TestUsers.Users)
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
-            .AddInMemoryClients(Clients.GetClients());
+            .AddInMemoryClients(ClientData.GetClients())
+            .AddOperationalStore(options =>
+            {
+                options.ConfigureDbContext = options =>
+                {
+                    options.UseSqlServer(_configuration["ConnectionString"]);
+                };
+            });
 
             if (_environment.EnvironmentName != "Offline")
                 builder.AddProductionSigningCredential(_configuration);
