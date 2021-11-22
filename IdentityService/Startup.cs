@@ -49,8 +49,10 @@ namespace IdentityService
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Clients.GetClients());
 
-            // not recommended for production - you need to store your key material somewhere secure
-            builder.AddDeveloperSigningCredential();
+            if (_environment.EnvironmentName != "Offline")
+                builder.AddProductionSigningCredential(_configuration);
+            else
+                builder.AddDeveloperSigningCredential();
 
             services.AddHsts(opts =>
             {

@@ -33,6 +33,7 @@ namespace IdentityService
                     .ConfigureSerilog(_applicationName, options =>
                     {
                         ConfigureLogLevels(options);
+                      
                     })
                     .UseSerilog()
                     .Build()
