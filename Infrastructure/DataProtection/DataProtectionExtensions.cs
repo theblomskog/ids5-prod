@@ -92,7 +92,7 @@ namespace Infrastructure.DataProtection
 
         private static Config GetConfig(IConfiguration configuration)
         {
-            return new Config(connectionString: configuration.GetConnectionString("ConnectionString") ?? "",
+            return new Config(connectionString: configuration["ConnectionString"] ?? "",
                 encryptionKeyUrl: configuration["DataProtection:EncryptionKeyUrl"] ?? "",
                 tenantId: configuration["Vault:TenantId"] ?? "",
                 clientId: configuration["Vault:ClientId"] ?? "",
