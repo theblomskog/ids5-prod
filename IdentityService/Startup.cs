@@ -52,6 +52,11 @@ namespace IdentityService
             .AddInMemoryClients(ClientData.GetClients())
             .AddOperationalStore(options =>
             {
+                options.EnableTokenCleanup = true;
+                //The number of records to remove at a time. Defaults to 100.
+                //options.TokenCleanupBatchSize = 100;
+                //options.TokenCleanupInterval = 30; //Seconds
+
                 options.ConfigureDbContext = options =>
                 {
                     options.UseSqlServer(_configuration["ConnectionString"]);
