@@ -7,6 +7,7 @@ using IdentityServerHost.Quickstart.UI;
 using IdentityServerInMem;
 using IdentityService.Configuration;
 using IdentityService.Configuration.Clients;
+using IdentityService.Configuration.Resources;
 using IdentityService.Data;
 using Infrastructure;
 using Infrastructure.DataProtection;
@@ -60,8 +61,9 @@ namespace IdentityService
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseSuccessEvents = true;
             })
-            .AddInMemoryIdentityResources(Config.IdentityResources)
-            .AddInMemoryApiScopes(Config.ApiScopes)
+            .AddInMemoryIdentityResources(IdentityResourceData.Resources())
+            .AddInMemoryApiScopes(ApiScopeData.Resources())
+            .AddInMemoryApiResources(ApiResourceData.Resources())
             .AddInMemoryClients(ClientData.GetClients())
             .AddOperationalStore(options =>
             {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 
@@ -6,133 +7,109 @@ namespace IdentityService.Configuration.Clients
 {
     public class ClientData
     {
-        private static Client clientDev = new Client
-        {
-            ClientId = "authcodeflowclient_dev",        //Unique ID of the client
-            ClientName = "My Client application",   //Client display name (used for logging and consent screen)
-            ClientUri = "https://www.tn-data.se",   //URI to further information about client (used on consent screen)
-            RequirePkce = true,
-
-            ClientSecrets = new List<Secret>
-                {
-                    new Secret
-                    {
-                        Value = "mysecret".Sha512()
-                    }
-                },
-
-            AllowOfflineAccess = true,
-
-            AllowedGrantTypes = GrantTypes.Code,
-
-            // When requesting both an id token and access token, should the user claims always
-            // be added to the id token instead of requiring the client to use the UserInfo endpoint.
-            // Defaults to false.
-            AlwaysIncludeUserClaimsInIdToken = false,
-
-            //Specifies whether this client is allowed to receive access tokens via the browser. 
-            //This is useful to harden flows that allow multiple response types 
-            //(e.g. by disallowing a hybrid flow client that is supposed to  use code id_token to add the token response type and thus leaking the token to the browser.
-            AllowAccessTokensViaBrowser = false,
-
-            RedirectUris =
-                {
-                    "https://localhost:5001/signin-oidc",
-                    "https://localhost:5002/signin-oidc"
-                },
-
-            PostLogoutRedirectUris =
-                {
-                    "https://localhost:5001/signout-callback-oidc"
-                },
-            FrontChannelLogoutUri = "https://localhost:5001/signout-oidc",
-
-            // By default a client has no access to any resources
-            // specify the allowed resources by adding the corresponding scopes names.
-            // If empty, the client can't access any scope
-            AllowedScopes =
-                {
-                    //Standard scopes
-                    IdentityServerConstants.StandardScopes.OpenId,
-                    IdentityServerConstants.StandardScopes.Email,
-                    IdentityServerConstants.StandardScopes.Profile,
-                    IdentityServerConstants.StandardScopes.Phone,
-                    IdentityServerConstants.StandardScopes.OfflineAccess,
-                },
-
-            AllowedCorsOrigins =
-                {
-                    "https://localhost:5001"
-                }
-        };
-
-        private static Client clientProd = new Client
-        {
-            ClientId = "authcodeflowclient_prod",        //Unique ID of the client
-            ClientName = "My Client application",   //Client display name (used for logging and consent screen)
-            ClientUri = "https://www.tn-data.se",   //URI to further information about client (used on consent screen)
-            RequirePkce = true,
-
-            ClientSecrets = new List<Secret>
-                {
-                    new Secret
-                    {
-                        Value = "mysecret".Sha512()
-                    }
-                },
-
-            AllowOfflineAccess = true,
-
-            AllowedGrantTypes = GrantTypes.Code,
-
-            // When requesting both an id token and access token, should the user claims always
-            // be added to the id token instead of requiring the client to use the UserInfo endpoint.
-            // Defaults to false.
-            AlwaysIncludeUserClaimsInIdToken = false,
-
-            //Specifies whether this client is allowed to receive access tokens via the browser. 
-            //This is useful to harden flows that allow multiple response types 
-            //(e.g. by disallowing a hybrid flow client that is supposed to  use code id_token to add the token response type and thus leaking the token to the browser.
-            AllowAccessTokensViaBrowser = false,
-
-            RedirectUris =
-                {
-                    "https://student2-client.secure.nu/signin-oidc"
-                },
-
-            PostLogoutRedirectUris =
-                {
-                    "https://student2-client.secure.nu/signout-callback-oidc"
-                },
-            FrontChannelLogoutUri = "https://student2-client.secure.nu/signout-oidc",
-
-            // By default a client has no access to any resources
-            // specify the allowed resources by adding the corresponding scopes names.
-            // If empty, the client can't access any scope
-            AllowedScopes =
-                {
-                    //Standard scopes
-                    IdentityServerConstants.StandardScopes.OpenId,
-                    IdentityServerConstants.StandardScopes.Email,
-                    IdentityServerConstants.StandardScopes.Profile,
-                    IdentityServerConstants.StandardScopes.Phone,
-                    IdentityServerConstants.StandardScopes.OfflineAccess,
-                },
-
-            AllowedCorsOrigins =
-                {
-                    "https://student2-client.secure.nu"
-                }
-        };
-
         public static IEnumerable<Client> GetClients()
         {
-            return new List<Client>()
+            //Define the development client
+            var clientDev = ClientFactory(clientId: "authcodeflowclient_dev", client =>
             {
-                clientDev,
-                clientProd
-            };
+                client.ClientSecrets = new List<Secret> { new Secret("mysecret".Sha256()) };
+
+                client.RedirectUris = new List<string>()
+                {
+                    "https://localhost:5001/signin-oidc",
+                    "https://localhost:5002/signin-oidc",
+                    "https://localhost:8001/authcode/callback"
+                };
+
+                client.PostLogoutRedirectUris = new List<string>()
+                {
+                    "https://localhost:5001/signout-callback-oidc"
+                };
+
+                client.FrontChannelLogoutUri = "https://localhost:5001/signout-oidc";
+
+                client.AllowedCorsOrigins = new List<string>()
+                {
+                    "https://localhost:5001"
+                };
+            });
+
+            //Define the production client
+            var clientProd = ClientFactory(clientId: "authcodeflowclient_prod", client =>
+            {
+                client.ClientSecrets = new List<Secret> { new Secret("mysecret".Sha256()) };
+
+                client.RedirectUris = new List<string>()
+                {
+                    "https://student1-client.secure.nu/signin-oidc"
+                };
+
+                client.PostLogoutRedirectUris = new List<string>()
+                {
+                    "https://student1-client.secure.nu/signout-callback-oidc"
+                };
+
+                client.FrontChannelLogoutUri = "https://student1-client.secure.nu/signout-oidc";
+
+                client.AllowedCorsOrigins = new List<string>()
+                {
+                    "https://student1-client.secure.nu"
+                };
+            });
+
+            return new List<Client>()
+                {
+                    clientDev,
+                    clientProd
+                };
         }
 
+
+        /// <summary>
+        /// Create an instance of a client and populate it with data that should be the same for all clients
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        private static Client ClientFactory(string clientId, Action<Client> clientOptions)
+        {
+            var baseClient = new Client()
+            {
+                ClientId = clientId,
+                ClientName = "My Client application",
+                ClientUri = "https://www.edument.se",
+                RequirePkce = true,
+                AllowOfflineAccess = true,
+                AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+
+                // When requesting both an id token and access token, should the user claims always
+                // be added to the id token instead of requiring the client to use the UserInfo endpoint.
+                // Defaults to false.
+                AlwaysIncludeUserClaimsInIdToken = false,
+
+                //Specifies whether this client is allowed to receive access tokens via the browser. 
+                //This is useful to harden flows that allow multiple response types 
+                //(e.g. by disallowing a hybrid flow client that is supposed to  use code id_token to add the token response type and thus leaking the token to the browser.
+                AllowAccessTokensViaBrowser = false,
+
+                AllowedScopes =
+                    {
+                        //Standard scopes
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Email,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Phone,
+                        IdentityServerConstants.StandardScopes.OfflineAccess,
+                        "employee",
+                        "payment"
+                    },
+
+                AlwaysSendClientClaims = true,
+                ClientClaimsPrefix = "client_",
+            };
+
+            clientOptions(baseClient);
+
+            return baseClient;
+        }
     }
 }
