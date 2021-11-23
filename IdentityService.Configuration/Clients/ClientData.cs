@@ -41,19 +41,19 @@ namespace IdentityService.Configuration.Clients
 
                 client.RedirectUris = new List<string>()
                 {
-                    "https://student1-client.secure.nu/signin-oidc"
+                    "https://student2-client.secure.nu/signin-oidc"
                 };
 
                 client.PostLogoutRedirectUris = new List<string>()
                 {
-                    "https://student1-client.secure.nu/signout-callback-oidc"
+                    "https://student2-client.secure.nu/signout-callback-oidc"
                 };
 
-                client.FrontChannelLogoutUri = "https://student1-client.secure.nu/signout-oidc";
+                client.FrontChannelLogoutUri = "https://student2-client.secure.nu/signout-oidc";
 
                 client.AllowedCorsOrigins = new List<string>()
                 {
-                    "https://student1-client.secure.nu"
+                    "https://student2-client.secure.nu"
                 };
             });
 
