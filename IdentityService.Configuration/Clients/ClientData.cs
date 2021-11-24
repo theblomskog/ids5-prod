@@ -105,6 +105,8 @@ namespace IdentityService.Configuration.Clients
 
                 AlwaysSendClientClaims = true,
                 ClientClaimsPrefix = "client_",
+
+                AccessTokenLifetime = 45
             };
 
             clientOptions(baseClient);

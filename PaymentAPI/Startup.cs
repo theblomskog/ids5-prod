@@ -48,7 +48,7 @@ namespace PaymentAPI
                 opt.IncludeErrorDetails = true;
 
 
-                opt.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(60);
+                opt.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(0);
 
                 // IdentityServer emits a type header by default, recommended extra check
                 opt.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
