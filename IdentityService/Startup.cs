@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Serilog;
 
 namespace IdentityService
@@ -89,6 +90,11 @@ namespace IdentityService
                 opts.IncludeSubDomains = true;
                 opts.MaxAge = TimeSpan.FromSeconds(15768000);
             });
+
+            //Add the listener to the ETW system
+            //IdentityModelEventSource.Logger.LogLevel = System.Diagnostics.Tracing.EventLevel.Verbose;
+
+            //var listener = new IdentityModelEventListener();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

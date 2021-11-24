@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
@@ -32,6 +33,16 @@ namespace Client
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<SerilogHttpMessageHandler>();
+
+            services.AddHttpClient("paymentapi", client =>
+            {
+                client.BaseAddress = new Uri(_configuration["paymentApiUrl"]);
+                client.Timeout = TimeSpan.FromSeconds(5);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).AddHttpMessageHandler<SerilogHttpMessageHandler>();
+
+
             if (_environment.EnvironmentName != "Offline")
                 services.AddDataProtectionWithSqlServerForClient(_configuration);
 
@@ -65,6 +76,8 @@ namespace Client
                 options.Scope.Add("profile");
                 options.Scope.Add("email");
                 options.Scope.Add("offline_access");
+                options.Scope.Add("employee");
+                options.Scope.Add("payment");
 
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
@@ -78,7 +91,15 @@ namespace Client
                 };
 
                 options.AccessDeniedPath = "/User/AccessDenied";
+
+                options.BackchannelHttpHandler = new BackChannelListener();
+                options.BackchannelTimeout = TimeSpan.FromSeconds(5);
             });
+
+            //Add the listener to the ETW system
+            //IdentityModelEventSource.Logger.LogLevel = System.Diagnostics.Tracing.EventLevel.Verbose;
+
+            //var listener = new IdentityModelEventListener();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

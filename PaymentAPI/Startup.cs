@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.DataProtection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
+using PaymentAPI.Middleware;
 using Serilog;
 
 namespace PaymentAPI
@@ -33,13 +36,40 @@ namespace PaymentAPI
             if (_environment.EnvironmentName != "Offline")
                 services.AddDataProtectionWithSqlServerForPaymentApi(_configuration);
 
-            services.AddControllersWithViews();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(opt =>
+            {
+                opt.Authority = _configuration["openid:authority"];
+                opt.Audience = "paymentapi";
+
+                opt.MapInboundClaims = false;
+                opt.TokenValidationParameters.RoleClaimType = "roles";
+                opt.TokenValidationParameters.NameClaimType = "name";
+                opt.IncludeErrorDetails = true;
+
+
+                opt.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(60);
+
+                // IdentityServer emits a type header by default, recommended extra check
+                opt.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+
+
+                opt.BackchannelHttpHandler = new BackChannelListener();
+                opt.BackchannelTimeout = TimeSpan.FromSeconds(5);
+            });
 
             services.AddHsts(opts =>
             {
                 opts.IncludeSubDomains = true;
                 opts.MaxAge = TimeSpan.FromSeconds(15768000);
             });
+
+            services.AddControllersWithViews();
+
+            //Add the listener to the ETW system
+            //var listener = new IdentityModelEventListener();
+            //IdentityModelEventSource.Logger.LogLevel = System.Diagnostics.Tracing.EventLevel.Warning;
+            //IdentityModelEventSource.ShowPII = true;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,6 +87,9 @@ namespace PaymentAPI
 
             app.UseSerilogRequestLogging();
 
+            app.UseWaitForIdentityServer(new WaitForIdentityServerOptions
+            { Authority = _configuration["openid:authority"] });
+
             app.UseHttpsRedirection();
             app.UseSecurityHeaders();
 
@@ -66,6 +99,10 @@ namespace PaymentAPI
             new RequestLocalizationOptions()
                 .SetDefaultCulture("se-SE"));
 
+            //Wait for IdentityServer to startup
+
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
